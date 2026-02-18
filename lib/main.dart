@@ -12,9 +12,10 @@ class DigitalPetApp extends StatefulWidget {
 }
 
 class _DigitalPetAppState extends State<DigitalPetApp> {
-  String petName = "Pou";
+  String petName = "Your Pet";
   int happinessLevel = 50;
   int hungerLevel = 50;
+  TextEditingController _nameController = TextEditingController();
 
   void _playWithPet() {
     setState(() {
@@ -120,7 +121,31 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
               ],
             ),
             SizedBox(height: 16.0),
-            Text("Name: $petName", style: TextStyle(fontSize: 20.0)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        labelText: "Enter Pet Name",
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        petName = _nameController.text;
+                      });
+                    },
+                    child: Text('Set Name'),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
