@@ -18,6 +18,10 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   int hungerLevel = 50;
   TextEditingController _nameController = TextEditingController();
   Timer? _timer;
+  Timer? _winTimer;
+  bool _gameOver = false;
+  bool _gameWon = false;
+  int _happySeconds = 0;
 
   @override
   void initState() {
@@ -28,6 +32,22 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         if (hungerLevel > 100) {
           hungerLevel = 100;
         }
+        _checkLossCondition();
+      });
+    });
+    _winTimer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      if (_gameOver || _gameWon) return;
+      setState(() {
+        if (happinessLevel > 80) {
+          _happySeconds++;
+          if (_happySeconds >= 180) {
+            _gameWon = true;
+            _timer?.cancel();
+            _winTimer?.cancel();
+          }
+        } else {
+          _happySeconds = 0;
+        }
       });
     });
   }
@@ -35,21 +55,34 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   @override
   void dispose() {
     _timer?.cancel();
+    _winTimer?.cancel();
     _nameController.dispose();
     super.dispose();
   }
 
+  void _checkLossCondition() {
+    if (hungerLevel >= 100 && happinessLevel <= 10) {
+      _gameOver = true;
+      _timer?.cancel();
+      _winTimer?.cancel();
+    }
+  }
+
   void _playWithPet() {
+    if (_gameOver || _gameWon) return;
     setState(() {
       happinessLevel += 10;
       _updateHunger();
+      _checkLossCondition();
     });
   }
 
   void _feedPet() {
+    if (_gameOver || _gameWon) return;
     setState(() {
       hungerLevel -= 10;
       _updateHappiness();
+      _checkLossCondition();
     });
   }
 
@@ -108,7 +141,25 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
         title: Text('Digital Pet'),
       ),
       body: Center(
-        child: Column(
+        child: _gameOver
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Game Over!', style: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold, color: Colors.red)),
+                SizedBox(height: 16.0),
+                Text('Your pet\'s hunger reached 100 and happiness dropped to 10.', style: TextStyle(fontSize: 16.0), textAlign: TextAlign.center),
+              ],
+            )
+          : _gameWon
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('You Win!', style: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold, color: Colors.green)),
+                  SizedBox(height: 16.0),
+                  Text('Your pet stayed happy for 3 minutes!', style: TextStyle(fontSize: 16.0)),
+                ],
+              )
+            : Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text('Name: $petName', style: TextStyle(fontSize: 20.0)),
