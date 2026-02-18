@@ -48,6 +48,16 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     });
   }
 
+  Color _moodColor(double happinesslevel) {
+    if (happinessLevel > 70) {
+      return Colors.green;
+    } else if (happinessLevel >= 30) {
+      return Colors.yellow;
+    } else {
+      return Colors.red;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,6 +83,13 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
               onPressed: _feedPet,
               child: Text('Feed Your Pet'),
             ),
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                _moodColor(happinessLevel.toDouble()),
+                BlendMode.modulate,
+              ),
+              child: Image.asset('assets/pet_image.png'),
+            )
           ],
         ),
       ),
