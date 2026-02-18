@@ -12,7 +12,7 @@ class DigitalPetApp extends StatefulWidget {
 }
 
 class _DigitalPetAppState extends State<DigitalPetApp> {
-  String petName = "Your Pet";
+  String petName = "Pou";
   int happinessLevel = 50;
   int hungerLevel = 50;
 
@@ -58,6 +58,26 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     }
   }
 
+  String _moodText(double happinessLevel) {
+    if (happinessLevel > 70) {
+      return "Happy";
+    } else if (happinessLevel >= 30) {
+      return "Neutral";
+    } else {
+      return "Sad";
+    }
+  }
+
+  String _moodEmoji(double happinessLevel) {
+    if (happinessLevel > 70) {
+      return "😊";
+    } else if (happinessLevel >= 30) {
+      return "😐";
+    } else {
+      return "😢";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,8 +108,19 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
                 _moodColor(happinessLevel.toDouble()),
                 BlendMode.modulate,
               ),
-              child: Image.asset('assets/pet_image.png'),
-            )
+              child: Image.asset('assets/pet_image.png', height: 120),
+            ),
+            SizedBox(height: 8.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(_moodText(happinessLevel.toDouble()), style: TextStyle(fontSize: 18.0)),
+                SizedBox(width: 8.0),
+                Text(_moodEmoji(happinessLevel.toDouble()), style: TextStyle(fontSize: 18.0)),
+              ],
+            ),
+            SizedBox(height: 16.0),
+            Text("Name: $petName", style: TextStyle(fontSize: 20.0)),
           ],
         ),
       ),
