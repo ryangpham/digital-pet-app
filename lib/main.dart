@@ -22,6 +22,8 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   bool _gameOver = false;
   bool _gameWon = false;
   int _happySeconds = 0;
+  String _selectedActivity = "Run";
+  final List<String> _activities = ["Run", "Sleep", "Eat", "Play"];
 
   @override
   void initState() {
@@ -134,6 +136,43 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     }
   }
 
+  void _doActivity() {
+    if (_gameOver || _gameWon) return;
+    setState(() {
+      switch (_selectedActivity) {
+        case "Run":
+          happinessLevel += 10;
+          hungerLevel += 10;
+          break;
+        case "Sleep":
+          happinessLevel += 5;
+          hungerLevel += 8;
+          break;
+        case "Eat":
+          happinessLevel += 5;
+          hungerLevel -= 15;
+          break;
+        case "Play":
+          happinessLevel += 15;
+          hungerLevel += 10;
+          break;
+      }
+      if (happinessLevel > 100) {
+        happinessLevel = 100;
+      }
+      if (happinessLevel < 0) {
+        happinessLevel = 0;
+      }
+      if (hungerLevel > 100) {
+        hungerLevel = 100;
+      }
+      if (hungerLevel < 0) {
+        hungerLevel = 0;
+      }
+      _checkLossCondition();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,15 +207,26 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
             SizedBox(height: 16.0),
             Text('Hunger Level: $hungerLevel', style: TextStyle(fontSize: 20.0)),
             SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: _playWithPet,
-              child: Text('Play with Your Pet'),
+            DropdownButton<String>(
+              value: _selectedActivity,
+              items: _activities.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedActivity = newValue!;
+                });
+              },
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _feedPet,
-              child: Text('Feed Your Pet'),
+              onPressed: _doActivity,
+              child: Text('Do Activity'),
             ),
+            SizedBox(height: 16.0),
             ColorFiltered(
               colorFilter: ColorFilter.mode(
                 _moodColor(happinessLevel.toDouble()),
